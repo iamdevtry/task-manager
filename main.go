@@ -5,21 +5,25 @@ import (
 	"fmt"
 	"log"
 
+	config "github.com/iamdevtry/task-manager/util"
 	_ "github.com/sijms/go-ora/v2"
 )
 
-const createTableStatement = "CREATE TABLE TEMP_TABLE ( NAME VARCHAR2(100), CREATION_TIME TIMESTAMP DEFAULT SYSTIMESTAMP, VALUE  NUMBER(5))"
-
 func main() {
 	fmt.Println("Hello, World!")
+	config, err := config.LoadConfig(".")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	db, err := sql.Open("oracle", connectionString)
+	connectionString := fmt.Sprintf("oracle://%s:%s@%s/%s", config.DBUsername, config.DBPassword, config.DBServer, config.DBService)
+
+	db, err := sql.Open(config.DBDriver, connectionString)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = db.Exec(createTableStatement)
 	if err != nil {
 		log.Fatal(err)
 	}
