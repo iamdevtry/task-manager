@@ -1,17 +1,16 @@
 package api
 
 import (
-	"database/sql"
-
 	"github.com/gin-gonic/gin"
+	db "github.com/jmoiron/sqlx"
 )
 
 type Server struct {
-	store  *sql.DB
+	store  *db.DB
 	router *gin.Engine
 }
 
-func NewServer(store *sql.DB) *Server {
+func NewServer(store *db.DB) *Server {
 	server := &Server{store: store}
 	router := gin.Default()
 
@@ -20,6 +19,9 @@ func NewServer(store *sql.DB) *Server {
 			"message": "pong",
 		})
 	})
+
+	router.GET("/accounts", server.listUsers)
+	router.GET("/accounts/:id", server.getUser)
 
 	server.router = router
 	return server
