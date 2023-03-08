@@ -39,7 +39,7 @@ func (s *Store) CreateUser(ctx context.Context, user model.CreateUser) error {
 		user.Username,
 		user.Mobile,
 		user.Email,
-		user.PasswordHash,
+		user.Password,
 		user.Intro,
 		user.Profile,
 	)

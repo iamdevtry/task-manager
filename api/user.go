@@ -5,7 +5,9 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/iamdevtry/task-manager/common"
 	"github.com/iamdevtry/task-manager/component"
+	"github.com/iamdevtry/task-manager/component/hasher"
 	"github.com/iamdevtry/task-manager/db/model"
 	"github.com/iamdevtry/task-manager/db/query"
 )
@@ -19,7 +21,7 @@ func ListUsers(appCtx component.AppContext) gin.HandlerFunc {
 		if err != nil {
 			panic(err)
 		}
-		ctx.JSON(http.StatusOK, users)
+		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(users))
 	}
 }
 
@@ -38,7 +40,7 @@ func GetUser(appCtx component.AppContext) gin.HandlerFunc {
 		if err != nil {
 			panic(err)
 		}
-		ctx.JSON(http.StatusOK, user)
+		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(user))
 	}
 }
 
@@ -53,12 +55,13 @@ func CreateUser(appCtx component.AppContext) gin.HandlerFunc {
 		}
 
 		store := query.NewStore(appCtx.GetDBConn())
-
+		hash := hasher.NewMd5Hash()
+		user.Password = hash.Hash(user.Password)
 		err = store.CreateUser(ctx, user)
 
 		if err != nil {
 			panic(err)
 		}
-		ctx.JSON(http.StatusOK, user)
+		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse("User created successfully"))
 	}
 }
