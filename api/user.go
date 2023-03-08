@@ -5,58 +5,63 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/iamdevtry/task-manager/component"
 	"github.com/iamdevtry/task-manager/db/model"
 	"github.com/iamdevtry/task-manager/db/query"
 )
 
-func (server *Server) listUsers(ctx *gin.Context) {
-	store := query.NewStore(server.store)
+func ListUsers(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		store := query.NewStore(appCtx.GetDBConn())
 
-	users, err := store.ListUsers(ctx)
+		users, err := store.ListUsers(ctx)
 
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, users)
 	}
-	ctx.JSON(http.StatusOK, users)
 }
 
-func (server *Server) getUser(ctx *gin.Context) {
-	store := query.NewStore(server.store)
+func GetUser(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		store := query.NewStore(appCtx.GetDBConn())
 
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+		id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		if err != nil {
+			panic(err)
+		}
+
+		user, err := store.GetUser(ctx, id)
+
+		if err != nil {
+			panic(err)
+		}
+		ctx.JSON(http.StatusOK, user)
 	}
-
-	user, err := store.GetUser(ctx, id)
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, user)
 }
 
-func (server *Server) createUser(ctx *gin.Context) {
-	var user model.CreateUser
+func CreateUser(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var user model.CreateUser
 
-	err := ctx.ShouldBindJSON(&user)
+		err := ctx.ShouldBindJSON(&user)
 
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		store := query.NewStore(appCtx.GetDBConn())
+
+		err = store.CreateUser(ctx, user)
+
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, user)
 	}
-
-	store := query.NewStore(server.store)
-
-	err = store.CreateUser(ctx, user)
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, user)
 }

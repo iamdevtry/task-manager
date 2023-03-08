@@ -5,11 +5,43 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"github.com/iamdevtry/task-manager/api"
+	"github.com/iamdevtry/task-manager/component"
+	"github.com/iamdevtry/task-manager/middleware"
 	config "github.com/iamdevtry/task-manager/util"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/sijms/go-ora/v2"
 )
+
+func runService(db *sqlx.DB, secretKey string) error {
+	appCtx := component.NewAppContext(db, secretKey)
+
+	route := gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000"}
+	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
+
+	route.Use(cors.New(config), middleware.Recover(appCtx))
+
+	route.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+
+	v1 := route.Group("/v1")
+
+	users := v1.Group("/users")
+	{
+		users.POST("", api.CreateUser(appCtx))
+		users.GET("", api.ListUsers(appCtx))
+		users.GET("/:id", api.GetUser(appCtx))
+	}
+
+	return route.Run()
+}
 
 func main() {
 	config, err := config.LoadConfig(".")
@@ -24,13 +56,9 @@ func main() {
 		log.Fatal("cannot connect to db: ", err)
 	}
 
-	store := sqlx.NewDb(db, config.DBDriver)
-	server := api.NewServer(store)
+	slqx := sqlx.NewDb(db, config.DBDriver)
 
-	err = server.Start(config.ServerAddress)
-	if err != nil {
-		log.Fatal("cannot start server: ", err)
+	if err := runService(slqx, config.SysSecretKey); err != nil {
+		log.Fatal("cannot run service:", err)
 	}
-
-	defer db.Close()
 }
