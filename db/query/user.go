@@ -3,6 +3,7 @@ package query
 import (
 	"context"
 
+	"github.com/iamdevtry/task-manager/common"
 	"github.com/iamdevtry/task-manager/db/model"
 )
 
@@ -12,7 +13,7 @@ func (s *Store) ListUsers(ctx context.Context) ([]model.User, error) {
 	users := []model.User{}
 	err := s.db.Select(&users, listUsers)
 	if err != nil {
-		return nil, err
+		return nil, common.ErrCannotListEntity("users", err)
 	}
 	return users, nil
 }
@@ -23,7 +24,7 @@ func (s *Store) GetUser(ctx context.Context, id int64) (*model.User, error) {
 	user := &model.User{}
 	err := s.db.Get(user, getUser, id)
 	if err != nil {
-		return nil, err
+		return nil, common.ErrCannotGetEntity("user", err)
 	}
 	return user, nil
 }
@@ -43,7 +44,7 @@ func (s *Store) CreateUser(ctx context.Context, user model.CreateUser) error {
 		user.Profile,
 	)
 	if err != nil {
-		return err
+		return common.ErrCannotCreateEntity("user", err)
 	}
 	return nil
 }

@@ -17,8 +17,7 @@ func ListUsers(appCtx component.AppContext) gin.HandlerFunc {
 		users, err := store.ListUsers(ctx)
 
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
+			panic(err)
 		}
 		ctx.JSON(http.StatusOK, users)
 	}
@@ -50,8 +49,7 @@ func CreateUser(appCtx component.AppContext) gin.HandlerFunc {
 		err := ctx.ShouldBindJSON(&user)
 
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
+			panic(err)
 		}
 
 		store := query.NewStore(appCtx.GetDBConn())
@@ -59,8 +57,7 @@ func CreateUser(appCtx component.AppContext) gin.HandlerFunc {
 		err = store.CreateUser(ctx, user)
 
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
+			panic(err)
 		}
 		ctx.JSON(http.StatusOK, user)
 	}
