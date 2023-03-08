@@ -8,6 +8,8 @@ import (
 	"github.com/iamdevtry/task-manager/common"
 	"github.com/iamdevtry/task-manager/component"
 	"github.com/iamdevtry/task-manager/component/hasher"
+	"github.com/iamdevtry/task-manager/component/tokenprovider"
+	"github.com/iamdevtry/task-manager/component/tokenprovider/jwt"
 	"github.com/iamdevtry/task-manager/db/model"
 	"github.com/iamdevtry/task-manager/db/query"
 )
@@ -44,9 +46,9 @@ func GetUser(appCtx component.AppContext) gin.HandlerFunc {
 	}
 }
 
-func CreateUser(appCtx component.AppContext) gin.HandlerFunc {
+func Register(appCtx component.AppContext) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var user model.CreateUser
+		var user model.UserCreate
 
 		err := ctx.ShouldBindJSON(&user)
 
@@ -57,11 +59,45 @@ func CreateUser(appCtx component.AppContext) gin.HandlerFunc {
 		store := query.NewStore(appCtx.GetDBConn())
 		hash := hasher.NewMd5Hash()
 		user.Password = hash.Hash(user.Password)
-		err = store.CreateUser(ctx, user)
+		err = store.Register(ctx, user)
 
 		if err != nil {
 			panic(err)
 		}
 		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse("User created successfully"))
+	}
+}
+
+func Login(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var userLogin model.UserLogin
+		if err := ctx.ShouldBindJSON(&userLogin); err != nil {
+			panic(err)
+		}
+
+		store := query.NewStore(appCtx.GetDBConn())
+		user, err := store.Login(ctx, userLogin)
+		if err != nil {
+			panic(common.NewCustomError(err, "Invalid username or password", "401"))
+		}
+
+		hash := hasher.NewMd5Hash()
+		userLogin.Password = hash.Hash(userLogin.Password)
+		if user.PasswordHash != userLogin.Password {
+			panic(common.NewCustomError(err, "Invalid username or password", "401"))
+		}
+
+		jwtToken := jwt.NewTokenJWTProvider(appCtx.SecretKey())
+
+		payload := tokenprovider.TokenPayload{
+			UserId: int(user.Id),
+		}
+
+		accessToken, err := jwtToken.Generate(payload, 60*60*24*7)
+		if err != nil {
+			panic(err)
+		}
+
+		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(accessToken))
 	}
 }

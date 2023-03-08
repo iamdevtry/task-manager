@@ -33,9 +33,11 @@ func runService(db *sqlx.DB, secretKey string) error {
 
 	v1 := route.Group("/v1")
 
+	v1.POST("/register", api.Register(appCtx))
+	v1.POST("/login", api.Login(appCtx))
+
 	users := v1.Group("/users")
 	{
-		users.POST("", api.CreateUser(appCtx))
 		users.GET("", api.ListUsers(appCtx))
 		users.GET("/:id", api.GetUser(appCtx))
 	}

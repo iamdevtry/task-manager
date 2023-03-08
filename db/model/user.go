@@ -13,7 +13,7 @@ type User struct {
 	Profile      *string `json:"profile,omitempty" db:"PROFILE"`
 }
 
-type CreateUser struct {
+type UserCreate struct {
 	FirstName  string `json:"first_name" db:"FIRSTNAME"`
 	MiddleName string `json:"middle_name" db:"MIDDLENAME"`
 	LastName   string `json:"last_name" db:"LASTNAME"`
@@ -23,4 +23,9 @@ type CreateUser struct {
 	Password   string `json:"password" `
 	Intro      string `json:"intro" db:"INTRO"`
 	Profile    string `json:"profile" db:"PROFILE"`
+}
+
+type UserLogin struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
