@@ -27,3 +27,23 @@ func (s *Store) GetUser(ctx context.Context, id int64) (*model.User, error) {
 	}
 	return user, nil
 }
+
+const createUser = `BEGIN proc_adduser(:FIRSTNAME, :MIDDLENAME, :LASTNAME, :USERNAME, :MOBILE, :EMAIL, :PASSWORDHASH, :INTRO, :PROFILE); END;`
+
+func (s *Store) CreateUser(ctx context.Context, user model.CreateUser) error {
+	_, err := s.db.Exec(createUser,
+		user.FirstName,
+		user.MiddleName,
+		user.LastName,
+		user.Username,
+		user.Mobile,
+		user.Email,
+		user.PasswordHash,
+		user.Intro,
+		user.Profile,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
