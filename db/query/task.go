@@ -24,3 +24,14 @@ func (s *Store) CreateTask(ctx context.Context, task model.TaskCreate) error {
 	}
 	return nil
 }
+
+const listTasks = `SELECT * FROM tasks`
+
+func (s *Store) ListTask(ctx context.Context, task model.Task) ([]model.Task, error) {
+	tasks := []model.Task{}
+	err := s.db.Select(&tasks, listTasks)
+	if err != nil {
+		return nil, common.ErrCannotListEntity("tasks", err)
+	}
+	return tasks, nil
+}
