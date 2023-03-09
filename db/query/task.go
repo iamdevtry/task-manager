@@ -35,3 +35,24 @@ func (s *Store) ListTask(ctx context.Context, task model.Task) ([]model.Task, er
 	}
 	return tasks, nil
 }
+
+const getTask = `SELECT * FROM tasks WHERE id = :id`
+
+func (s *Store) GetTask(ctx context.Context, id int64) (model.Task, error) {
+	var task model.Task
+	err := s.db.Get(&task, getTask, id)
+	if err != nil {
+		return task, common.ErrCannotGetEntity("task", err)
+	}
+	return task, nil
+}
+
+const deleteTask = `DELETE FROM tasks WHERE id = :id`
+
+func (s *Store) DeleteTask(ctx context.Context, id int64) error {
+	_, err := s.db.Exec(deleteTask, id)
+	if err != nil {
+		return common.ErrCannotDeletedEntity("task", err)
+	}
+	return nil
+}
