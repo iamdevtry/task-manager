@@ -27,7 +27,7 @@ func (s *Store) CreateTask(ctx context.Context, task model.TaskCreate) error {
 
 const listTasks = `SELECT * FROM tasks`
 
-func (s *Store) ListTask(ctx context.Context, task model.Task) ([]model.Task, error) {
+func (s *Store) ListTask(ctx context.Context) ([]model.Task, error) {
 	tasks := []model.Task{}
 	err := s.db.Select(&tasks, listTasks)
 	if err != nil {
