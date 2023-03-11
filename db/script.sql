@@ -3,17 +3,13 @@
 CREATE TABLE USERS (
     id NUMBER(19) PRIMARY KEY NOT NULL,
     roleId NUMBER(5) NOT NULL,
-    firstName VARCHAR2(50) DEFAULT NULL,
-    middleName VARCHAR2(50) DEFAULT NULL,
-    lastName VARCHAR2(50) DEFAULT NULL,
+    firstName NVARCHAR2(50) DEFAULT NULL,
+    middleName NVARCHAR2(50) DEFAULT NULL,
+    lastName NVARCHAR2(50) DEFAULT NULL,
     username VARCHAR2(50) DEFAULT NULL,
     mobile VARCHAR2(15),
     email VARCHAR2(50),
-    passwordHash VARCHAR2(32) NOT NULL,
-    registeredAt TIMESTAMP(0) NOT NULL,
-    lastLogin TIMESTAMP(0) DEFAULT NULL,
-    intro VARCHAR2(255) DEFAULT NULL,
-    profile CLOB DEFAULT NULL
+    passwordHash VARCHAR2(32) NOT NULL
 );
 -- Generate ID using sequence and trigger
 CREATE SEQUENCE user_seq START WITH 1 INCREMENT BY 1;
@@ -28,10 +24,8 @@ END;
 CREATE TABLE tasks (
     id NUMBER(19) PRIMARY KEY NOT NULL,
     userId NUMBER(19) NOT NULL,
-    createdBy NUMBER(19) NOT NULL,
-    updatedBy NUMBER(19) NOT NULL,
-    title VARCHAR2(512) NOT NULL,
-    description VARCHAR2(2048) DEFAULT NULL,
+    title NVARCHAR2(512) NOT NULL,
+    description NVARCHAR2(512) DEFAULT NULL,
     status NUMBER(5) DEFAULT 0 NOT NULL,
     hours BINARY_DOUBLE DEFAULT 0 NOT NULL,
     createdAt TIMESTAMP(0) NOT NULL,
@@ -70,7 +64,7 @@ END;
 -- SQLINES LICENSE FOR EVALUATION USE ONLY
 CREATE TABLE tags (
     id NUMBER(19) PRIMARY KEY NOT NULL,
-    title VARCHAR2(75) NOT NULL,
+    title NVARCHAR2(75) NOT NULL,
     slug VARCHAR2(100) NOT NULL
 );
 -- Generate ID using sequence and trigger
@@ -94,10 +88,8 @@ CREATE TABLE activities (
     id NUMBER(19) PRIMARY KEY NOT NULL,
     userId NUMBER(19) NOT NULL,
     taskId NUMBER(19) NOT NULL,
-    createdBy NUMBER(19) NOT NULL,
-    updatedBy NUMBER(19) NOT NULL,
-    title VARCHAR2(512) NOT NULL,
-    description VARCHAR2(2048) DEFAULT NULL,
+    title NVARCHAR2(512) NOT NULL,
+    description NVARCHAR2(512) DEFAULT NULL,
     status NUMBER(5) DEFAULT 0 NOT NULL,
     hours BINARY_DOUBLE DEFAULT 0 NOT NULL,
     createdAt TIMESTAMP(0) NOT NULL,
@@ -122,7 +114,7 @@ CREATE TABLE comments (
     id NUMBER(19) PRIMARY KEY NOT NULL,
     taskId NUMBER(19) NOT NULL,
     activityId NUMBER(19) DEFAULT NULL,
-    title VARCHAR2(100) NOT NULL,
+    title NVARCHAR2(100) NOT NULL,
     createdAt TIMESTAMP(0) NOT NULL,
     updatedAt TIMESTAMP(0) DEFAULT NULL,
     content CLOB DEFAULT NULL
@@ -157,10 +149,6 @@ CREATE INDEX idx_activity_user ON activities (userId);
 CREATE INDEX idx_comment_task ON comments (taskId);
 ALTER TABLE tasks
 ADD CONSTRAINT fk_task_user FOREIGN KEY (userId) REFERENCES "USERS" (id);
-ALTER TABLE tasks
-ADD FOREIGN KEY (createdBy) REFERENCES "USERS" (id);
-ALTER TABLE tasks
-ADD FOREIGN KEY (updatedBy) REFERENCES "USERS" (id);
 ALTER TABLE task_metas
 ADD CONSTRAINT fk_meta_task FOREIGN KEY (taskId) REFERENCES tasks (id);
 ALTER TABLE task_tags
@@ -171,11 +159,65 @@ ALTER TABLE activities
 ADD CONSTRAINT fk_activity_user FOREIGN KEY (userId) REFERENCES "USERS" (id);
 ALTER TABLE activities
 ADD FOREIGN KEY (taskId) REFERENCES tasks (id);
-ALTER TABLE activities
-ADD FOREIGN KEY (createdBy) REFERENCES "USERS" (id);
-ALTER TABLE activities
-ADD FOREIGN KEY (updatedBy) REFERENCES "USERS" (id);
 ALTER TABLE comments
 ADD CONSTRAINT fk_comment_task FOREIGN KEY (taskId) REFERENCES tasks (id);
 ALTER TABLE comments
 ADD FOREIGN KEY (activityId) REFERENCES activities (id);
+-- PROCEDURE ADD TASK
+create or replace NONEDITIONABLE PROCEDURE proc_addtask (
+        userid IN NUMBER,
+        title IN NVARCHAR2,
+        description IN NVARCHAR2,
+        hours IN NUMBER,
+        plannedstartdate IN DATE,
+        plannedenddate IN DATE,
+        content IN CLOB
+    ) AS BEGIN
+INSERT INTO tasks (
+        userid,
+        title,
+        description,
+        hours,
+        plannedstartdate,
+        plannedenddate,
+        content
+    )
+VALUES (
+        userid,
+        title,
+        description,
+        hours,
+        plannedstartdate,
+        plannedenddate,
+        content
+    );
+END proc_addtask;
+-- PROCEDURE ADD USER
+create or replace NONEDITIONABLE PROCEDURE proc_adduser (
+        firstname IN NVARCHAR2,
+        middlename IN NVARCHAR2,
+        lastname IN NVARCHAR2,
+        username IN VARCHAR2,
+        mobile IN VARCHAR2,
+        email IN VARCHAR2,
+        passwordhash IN VARCHAR2
+    ) AS BEGIN
+INSERT INTO users (
+        firstname,
+        middlename,
+        lastname,
+        username,
+        mobile,
+        email,
+        passwordhash
+    )
+VALUES (
+        firstname,
+        middlename,
+        lastname,
+        username,
+        mobile,
+        email,
+        passwordhash
+    );
+END proc_adduser;
