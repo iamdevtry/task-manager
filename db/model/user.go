@@ -9,8 +9,6 @@ type User struct {
 	Mobile       string  `json:"mobile,omitempty" db:"MOBILE"`
 	Email        string  `json:"email,omitempty" db:"EMAIL"`
 	PasswordHash string  `json:"-" db:"PASSWORDHASH"`
-	Intro        *string `json:"intro,omitempty" db:"INTRO"`
-	Profile      *string `json:"profile,omitempty" db:"PROFILE"`
 }
 
 type UserCreate struct {
@@ -21,8 +19,6 @@ type UserCreate struct {
 	Mobile     string `json:"mobile" db:"MOBILE"`
 	Email      string `json:"email" db:"EMAIL"`
 	Password   string `json:"password" `
-	Intro      string `json:"intro" db:"INTRO"`
-	Profile    string `json:"profile" db:"PROFILE"`
 }
 
 type UserLogin struct {

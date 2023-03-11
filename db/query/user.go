@@ -29,7 +29,7 @@ func (s *Store) GetUser(ctx context.Context, id int64) (*model.User, error) {
 	return user, nil
 }
 
-const createUser = `BEGIN proc_adduser(:FIRSTNAME, :MIDDLENAME, :LASTNAME, :USERNAME, :MOBILE, :EMAIL, :PASSWORDHASH, :INTRO, :PROFILE); END;`
+const createUser = `BEGIN proc_adduser(:FIRSTNAME, :MIDDLENAME, :LASTNAME, :USERNAME, :MOBILE, :EMAIL, :PASSWORDHASH); END;`
 
 func (s *Store) Register(ctx context.Context, user model.UserCreate) error {
 	_, err := s.db.Exec(createUser,
@@ -40,8 +40,6 @@ func (s *Store) Register(ctx context.Context, user model.UserCreate) error {
 		user.Mobile,
 		user.Email,
 		user.Password,
-		user.Intro,
-		user.Profile,
 	)
 	if err != nil {
 		return common.ErrCannotCreateEntity("user", err)
