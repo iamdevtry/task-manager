@@ -38,3 +38,21 @@ func (store *Store) DeleteActivity(ctx context.Context, id int64) error {
 	}
 	return nil
 }
+
+const addActivity = `BEGIN proc_addactivity(:UserId, :TaskId, :Title, :Description, :Hours, :PlannedStartDate, :PlannedEndDate,:Content); END;`
+
+func (store *Store) AddActivity(ctx context.Context, activity model.ActivityCreate) error {
+	_, err := store.db.Exec(addActivity,
+		activity.UserId,
+		activity.TaskId,
+		activity.Description,
+		activity.Hours,
+		activity.PlannedStartDate,
+		activity.PlannedEndDate,
+		activity.Content,
+	)
+	if err != nil {
+		return common.ErrCannotCreateEntity("activity", err)
+	}
+	return nil
+}

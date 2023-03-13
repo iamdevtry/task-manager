@@ -18,3 +18,14 @@ type Activity struct {
 	ActualEndDate    *time.Time `json:"actual_end_date" db:"ACTUALENDDATE"`
 	Content          string     `json:"content" db:"CONTENT"`
 }
+
+type ActivityCreate struct {
+	UserId           int64      `json:"user_id" db:"USERID"`
+	TaskId           int64      `json:"task_id" db:"TASKID"`
+	Title            string     `json:"title" db:"TITLE"`
+	Description      string     `json:"description" db:"DESCRIPTION"`
+	Hours            float32    `json:"hours" db:"HOURS"`
+	PlannedStartDate *time.Time `json:"planned_start_date" db:"PLANNEDSTARTDATE"`
+	PlannedEndDate   *time.Time `json:"planned_end_date" db:"PLANNEDENDDATE"`
+	Content          string     `json:"content" db:"CONTENT"`
+}
