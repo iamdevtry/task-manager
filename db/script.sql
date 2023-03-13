@@ -221,3 +221,76 @@ VALUES (
         passwordhash
     );
 END proc_adduser;
+-- PROCEDURE ADD ACTIVITY
+create or replace NONEDITIONABLE PROCEDURE proc_addactivity (
+        userId IN NUMBER,
+        taskId IN NUMBER,
+        title IN NVARCHAR2,
+        description IN NVARCHAR2,
+        status IN NUMBER,
+        hours IN NUMBER,
+        createdAt IN TIMESTAMP,
+        updatedAt IN TIMESTAMP,
+        plannedStartDate IN TIMESTAMP,
+        plannedEndDate IN TIMESTAMP,
+        actualStartDate IN TIMESTAMP,
+        actualEndDate IN TIMESTAMP,
+        content IN CLOB
+    ) AS BEGIN
+INSERT INTO activities (
+        userId,
+        taskId,
+        title,
+        description,
+        status,
+        hours,
+        createdAt,
+        updatedAt,
+        plannedStartDate,
+        plannedEndDate,
+        actualStartDate,
+        actualEndDate,
+        content
+    )
+VALUES (
+        userId,
+        taskId,
+        title,
+        description,
+        status,
+        hours,
+        createdAt,
+        updatedAt,
+        plannedStartDate,
+        plannedEndDate,
+        actualStartDate,
+        actualEndDate,
+        content
+    );
+END proc_addactivity;
+-- PROCEDURE ADD COMMENT
+create or replace NONEDITIONABLE PROCEDURE proc_addcomment (
+        taskId IN NUMBER,
+        activityId IN NUMBER,
+        title IN NVARCHAR2,
+        createdAt IN TIMESTAMP,
+        updatedAt IN TIMESTAMP,
+        content IN CLOB
+    ) AS BEGIN
+INSERT INTO comments (
+        taskId,
+        activityId,
+        title,
+        createdAt,
+        updatedAt,
+        content
+    )
+VALUES (
+        taskId,
+        activityId,
+        title,
+        createdAt,
+        updatedAt,
+        content
+    );
+END proc_addcomment;
