@@ -42,6 +42,11 @@ func runService(db *sqlx.DB, secretKey string) error {
 		users.GET("/:id", api.GetUser(appCtx))
 	}
 
+	tasks := v1.Group("/tasks")
+	{
+		tasks.POST("", api.AddTask(appCtx))
+	}
+
 	return route.Run()
 }
 
