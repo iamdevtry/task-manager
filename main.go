@@ -51,6 +51,7 @@ func runService(db *sqlx.DB, secretKey string) error {
 	activities := v1.Group("/activities", middleware.RequireAuth(appCtx))
 	{
 		activities.POST("", api.AddActivity(appCtx))
+		activities.GET("", api.ListActivity(appCtx))
 	}
 
 	return route.Run()

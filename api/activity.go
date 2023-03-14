@@ -31,3 +31,20 @@ func AddActivity(appCtx component.AppContext) gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(nil))
 	}
 }
+
+func ListActivity(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		requester := ctx.MustGet(common.CurrentUser).(common.Requester)
+		userId := requester.GetUserId()
+
+		store := query.NewStore(appCtx.GetDBConn())
+
+		activities, err := store.ListActivityByUser(ctx.Request.Context(), userId)
+
+		if err != nil {
+			panic(err)
+		}
+
+		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(activities))
+	}
+}

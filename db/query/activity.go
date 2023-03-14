@@ -29,6 +29,17 @@ func (store *Store) GetActivity(ctx context.Context, id int64) (model.Activity, 
 	return activity, nil
 }
 
+const listActivitiesByUser = `SELECT * FROM activities WHERE userId = :user_id`
+
+func (store *Store) ListActivityByUser(ctx context.Context, userId int64) ([]model.Activity, error) {
+	activities := []model.Activity{}
+	err := store.db.Select(&activities, listActivitiesByUser, userId)
+	if err != nil {
+		return nil, common.ErrCannotListEntity("activities", err)
+	}
+	return activities, nil
+}
+
 const deleteActivity = `DELETE FROM activities WHERE id = :id`
 
 func (store *Store) DeleteActivity(ctx context.Context, id int64) error {
