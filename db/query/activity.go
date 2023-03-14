@@ -41,10 +41,11 @@ func (store *Store) DeleteActivity(ctx context.Context, id int64) error {
 
 const addActivity = `BEGIN proc_addactivity(:UserId, :TaskId, :Title, :Description, :Hours, :PlannedStartDate, :PlannedEndDate,:Content); END;`
 
-func (store *Store) AddActivity(ctx context.Context, activity model.ActivityCreate) error {
+func (store *Store) CreateActivity(ctx context.Context, activity model.ActivityCreate) error {
 	_, err := store.db.Exec(addActivity,
 		activity.UserId,
 		activity.TaskId,
+		activity.Title,
 		activity.Description,
 		activity.Hours,
 		activity.PlannedStartDate,
