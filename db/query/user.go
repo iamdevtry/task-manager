@@ -58,3 +58,15 @@ func (s *Store) Login(ctx context.Context, userLogin model.UserLogin) (*model.Us
 
 	return &user, nil
 }
+
+const findUserById = `SELECT * FROM users WHERE id=:1`
+
+func (s *Store) FindUser(ctx context.Context, userId int64) (*model.User, error) {
+	var user model.User
+
+	if err := s.db.Get(&user, findUserById, userId); err != nil {
+		return nil, common.ErrRecordNotFound
+	}
+
+	return &user, nil
+}

@@ -25,9 +25,7 @@ func AddTask(appCtx component.AppContext) gin.HandlerFunc {
 
 		store := query.NewStore(appCtx.GetDBConn())
 
-		err = store.CreateTask(ctx.Request.Context(), task)
-
-		if err != nil {
+		if err := store.CreateTask(ctx.Request.Context(), task); err != nil {
 			panic(err)
 		}
 		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(nil))

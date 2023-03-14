@@ -11,6 +11,10 @@ type User struct {
 	PasswordHash string  `json:"-" db:"PASSWORDHASH"`
 }
 
+func (u *User) GetUserId() int64 {
+	return u.Id
+}
+
 type UserCreate struct {
 	FirstName  string `json:"first_name" db:"FIRSTNAME"`
 	MiddleName string `json:"middle_name" db:"MIDDLENAME"`

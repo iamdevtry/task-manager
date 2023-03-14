@@ -19,11 +19,11 @@ type Task struct {
 }
 
 type TaskCreate struct {
-	UserId           int64      `json:"user_id" db:"USERID"`
-	Title            string     `json:"title" db:"TITLE"`
-	Description      string     `json:"description" db:"DESCRIPTION"`
-	Content          string     `json:"content" db:"CONTENT"`
-	Hours            float32    `json:"hours" db:"HOURS"`
-	PlannedStartDate *time.Time `json:"planned_start_date" db:"PLANNEDSTARTDATE"`
-	PlannedEndDate   *time.Time `json:"planned_end_date" db:"PLANNEDENDDATE"`
+	UserId           int64   `json:"user_id" db:"USERID"`
+	Title            string  `json:"title" db:"TITLE"`
+	Description      string  `json:"description" db:"DESCRIPTION"`
+	Content          string  `json:"content" db:"CONTENT"`
+	Hours            float32 `json:"hours" db:"HOURS"`
+	PlannedStartDate string  `json:"planned_start_date" db:"PLANNEDSTARTDATE"`
+	PlannedEndDate   string  `json:"planned_end_date" db:"PLANNEDENDDATE"`
 }

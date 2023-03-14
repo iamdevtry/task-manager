@@ -42,7 +42,7 @@ func runService(db *sqlx.DB, secretKey string) error {
 		users.GET("/:id", api.GetUser(appCtx))
 	}
 
-	tasks := v1.Group("/tasks")
+	tasks := v1.Group("/tasks", middleware.RequireAuth(appCtx))
 	{
 		tasks.POST("", api.AddTask(appCtx))
 	}
