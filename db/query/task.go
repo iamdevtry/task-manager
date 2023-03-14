@@ -47,6 +47,17 @@ func (s *Store) GetTask(ctx context.Context, id int64) (model.Task, error) {
 	return task, nil
 }
 
+const getTaskByUserId = `SELECT * FROM tasks WHERE userid = :userid`
+
+func (s *Store) GetTaskByUserId(ctx context.Context, userid int64) ([]model.Task, error) {
+	tasks := []model.Task{}
+	err := s.db.Select(&tasks, getTaskByUserId, userid)
+	if err != nil {
+		return nil, common.ErrCannotGetEntity("task", err)
+	}
+	return tasks, nil
+}
+
 const deleteTask = `DELETE FROM tasks WHERE id = :id`
 
 func (s *Store) DeleteTask(ctx context.Context, id int64) error {
