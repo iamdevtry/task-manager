@@ -26,4 +26,5 @@ type TaskCreate struct {
 	Hours            float32 `json:"hours" db:"HOURS"`
 	PlannedStartDate string  `json:"planned_start_date" db:"PLANNEDSTARTDATE"`
 	PlannedEndDate   string  `json:"planned_end_date" db:"PLANNEDENDDATE"`
+	Tags             []Tag   `json:"tags"`
 }

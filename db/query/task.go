@@ -2,14 +2,16 @@ package query
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/iamdevtry/task-manager/common"
 	"github.com/iamdevtry/task-manager/db/model"
 )
 
-const createTask = `BEGIN proc_addtask(:userid, :title, :description, :hours, :plannedstartdate, :plannedenddate, :content); END;`
+const createTask = `BEGIN proc_addtask(:userid, :title, :description, :hours, :plannedstartdate, :plannedenddate, :content, :inserted_id); END;`
 
 func (s *Store) CreateTask(ctx context.Context, task model.TaskCreate) error {
+	var taskInsertedId int64
 	_, err := s.db.Exec(createTask,
 		task.UserId,
 		task.Title,
@@ -18,10 +20,30 @@ func (s *Store) CreateTask(ctx context.Context, task model.TaskCreate) error {
 		task.PlannedStartDate,
 		task.PlannedEndDate,
 		task.Content,
+		sql.Out{Dest: &taskInsertedId},
 	)
 	if err != nil {
 		return common.ErrCannotCreateEntity("task", err)
 	}
+
+	if task.Tags != nil && len(task.Tags) > 0 {
+		for _, tag := range task.Tags {
+			existTag, _ := s.GetTag(ctx, tag.Id)
+
+			if existTag.Id == 0 {
+				tagAddedId, err := s.AddTag(ctx, tag)
+				if err != nil {
+					return common.ErrCannotCreateEntity("tag", err)
+				}
+
+				s.AddTaskToTag(ctx, taskInsertedId, *tagAddedId)
+			} else {
+				s.AddTaskToTag(ctx, taskInsertedId, tag.Id)
+			}
+
+		}
+	}
+
 	return nil
 }
 
