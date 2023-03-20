@@ -2,11 +2,10 @@
 -- SQLINES LICENSE FOR EVALUATION USE ONLY
 CREATE TABLE USERS (
     id NUMBER(19) PRIMARY KEY NOT NULL,
-    roleId NUMBER(5) NOT NULL,
     firstName NVARCHAR2(50) DEFAULT NULL,
     middleName NVARCHAR2(50) DEFAULT NULL,
     lastName NVARCHAR2(50) DEFAULT NULL,
-    username VARCHAR2(50) DEFAULT NULL,
+    username VARCHAR2(50) NOT NULL,
     mobile VARCHAR2(15),
     email VARCHAR2(50),
     passwordHash VARCHAR2(32) NOT NULL
@@ -112,10 +111,10 @@ END;
 -- SQLINES LICENSE FOR EVALUATION USE ONLY
 CREATE TABLE comments (
     id NUMBER(19) PRIMARY KEY NOT NULL,
-    taskId NUMBER(19) NOT NULL,
+    taskId NUMBER(19) DEFAULT NULL,
     activityId NUMBER(19) DEFAULT NULL,
     title NVARCHAR2(100) NOT NULL,
-    createdAt TIMESTAMP(0) NOT NULL,
+    createdAt TIMESTAMP(0) NOT NULL CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP(0) DEFAULT NULL,
     content CLOB DEFAULT NULL
 );
@@ -169,10 +168,11 @@ create or replace NONEDITIONABLE PROCEDURE proc_addtask (
         title IN NVARCHAR2,
         description IN NVARCHAR2,
         hours IN NUMBER,
-        plannedstartdate IN DATE,
-        plannedenddate IN DATE,
-        content IN CLOB
-    ) AS BEGIN
+        plannedstartdate IN TIMESTAMP,
+        plannedenddate IN TIMESTAMP,
+        content IN CLOB,
+        inserted_id OUT NUMBER
+    ) IS BEGIN
 INSERT INTO tasks (
         userid,
         title,
@@ -187,10 +187,11 @@ VALUES (
         title,
         description,
         hours,
-        plannedstartdate,
-        plannedenddate,
+        TO_TIMESTAMP(plannedstartdate),
+        TO_TIMESTAMP(plannedenddate),
         content
-    );
+    )
+RETURNING id INTO inserted_id;
 END proc_addtask;
 -- PROCEDURE ADD USER
 create or replace NONEDITIONABLE PROCEDURE proc_adduser (
@@ -225,16 +226,11 @@ END proc_adduser;
 create or replace NONEDITIONABLE PROCEDURE proc_addactivity (
         userId IN NUMBER,
         taskId IN NUMBER,
-        title IN NVARCHAR2,
-        description IN NVARCHAR2,
-        status IN NUMBER,
+        title IN CLOB,
+        description IN CLOB,
         hours IN NUMBER,
-        createdAt IN TIMESTAMP,
-        updatedAt IN TIMESTAMP,
         plannedStartDate IN TIMESTAMP,
         plannedEndDate IN TIMESTAMP,
-        actualStartDate IN TIMESTAMP,
-        actualEndDate IN TIMESTAMP,
         content IN CLOB
     ) AS BEGIN
 INSERT INTO activities (
@@ -242,14 +238,9 @@ INSERT INTO activities (
         taskId,
         title,
         description,
-        status,
         hours,
-        createdAt,
-        updatedAt,
         plannedStartDate,
         plannedEndDate,
-        actualStartDate,
-        actualEndDate,
         content
     )
 VALUES (
@@ -257,14 +248,9 @@ VALUES (
         taskId,
         title,
         description,
-        status,
         hours,
-        createdAt,
-        updatedAt,
         plannedStartDate,
         plannedEndDate,
-        actualStartDate,
-        actualEndDate,
         content
     );
 END proc_addactivity;
@@ -273,24 +259,33 @@ create or replace NONEDITIONABLE PROCEDURE proc_addcomment (
         taskId IN NUMBER,
         activityId IN NUMBER,
         title IN NVARCHAR2,
-        createdAt IN TIMESTAMP,
-        updatedAt IN TIMESTAMP,
         content IN CLOB
     ) AS BEGIN
 INSERT INTO comments (
         taskId,
         activityId,
         title,
-        createdAt,
-        updatedAt,
         content
     )
 VALUES (
         taskId,
         activityId,
         title,
-        createdAt,
-        updatedAt,
         content
     );
 END proc_addcomment;
+-- PROCEDURE ADD TAG
+create or replace NONEDITIONABLE PROCEDURE proc_addtag (
+        title IN VARCHAR2,
+        slug IN VARCHAR2,
+        inserted_id OUT NUMBER
+    ) IS BEGIN
+INSERT INTO tags (title, slug)
+VALUES (title, slug)
+RETURNING id INTO inserted_id;
+END proc_addtag;
+-- PROCEDURE ADD TASK TO TAG
+create or replace NONEDITIONABLE procedure proc_addtasktotag (taskid in number, tagid in number) as begin
+INSERT INTO task_tags(taskid, tagid)
+VALUES (taskid, tagid);
+end proc_addtasktotag;
