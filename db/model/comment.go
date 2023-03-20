@@ -11,3 +11,10 @@ type Comment struct {
 	UpdatedAt  *time.Time `json:"updated_at" db:"UPDATEDAT"`
 	Content    string     `json:"content" db:"CONTENT"`
 }
+
+type CommentCreate struct {
+	TaskId     int64  `json:"task_id" db:"TASKID"`
+	ActivityId int64  `json:"activity_id" db:"ACTIVITYID"`
+	Title      string `json:"title" db:"TITLE"`
+	Content    string `json:"content" db:"CONTENT"`
+}

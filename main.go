@@ -54,6 +54,11 @@ func runService(db *sqlx.DB, secretKey string) error {
 		activities.GET("", api.ListActivity(appCtx))
 	}
 
+	comments := v1.Group("/comments", middleware.RequireAuth(appCtx))
+	{
+		comments.POST("", api.AddComment(appCtx))
+	}
+
 	return route.Run()
 }
 
