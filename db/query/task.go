@@ -89,3 +89,14 @@ func (s *Store) DeleteTask(ctx context.Context, id int64) error {
 	}
 	return nil
 }
+
+const countTask = `SELECT count_tasks() FROM dual;`
+
+func (s *Store) CountTask(ctx context.Context) (int64, error) {
+	var count int64
+	err := s.db.Get(&count, countTask)
+	if err != nil {
+		return 0, common.ErrDB(err)
+	}
+	return count, nil
+}
