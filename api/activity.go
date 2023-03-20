@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/iamdevtry/task-manager/common"
@@ -46,5 +47,22 @@ func ListActivity(appCtx component.AppContext) gin.HandlerFunc {
 		}
 
 		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(activities))
+	}
+}
+
+func DeleteActivity(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		activityId, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			panic(err)
+		}
+
+		store := query.NewStore(appCtx.GetDBConn())
+
+		if err := store.DeleteActivity(ctx.Request.Context(), int64(activityId)); err != nil {
+			panic(err)
+		}
+
+		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(nil))
 	}
 }
