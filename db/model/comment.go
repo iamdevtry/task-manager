@@ -9,7 +9,7 @@ type Comment struct {
 	Title      string     `json:"title" db:"TITLE"`
 	CreatedAt  *time.Time `json:"created_at" db:"CREATEDAT"`
 	UpdatedAt  *time.Time `json:"updated_at" db:"UPDATEDAT"`
-	Content    string     `json:"content" db:"CONTENT"`
+	Content    *string    `json:"content" db:"CONTENT"`
 }
 
 type CommentCreate struct {

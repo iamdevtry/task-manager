@@ -23,10 +23,11 @@ func AddComment(appCtx component.AppContext) gin.HandlerFunc {
 
 		store := query.NewStore(appCtx.GetDBConn())
 
-		if err := store.AddComment(ctx.Request.Context(), comment); err != nil {
+		result := &model.Comment{}
+		if result, err = store.AddComment(ctx.Request.Context(), comment); err != nil {
 			panic(err)
 		}
-		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(comment))
+		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(result))
 	}
 }
 

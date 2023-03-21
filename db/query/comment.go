@@ -2,28 +2,38 @@ package query
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/iamdevtry/task-manager/common"
 	"github.com/iamdevtry/task-manager/db/model"
 )
 
-const addComment = `INSERT INTO comments (taskId, activityId, title, content) VALUES (:taskId, :activityId, :title, :content)`
+const addComment = `BEGIN proc_addcomment(:taskId, :activityId, :title, :content, :inserted_id); END;`
 
-func (store *Store) AddComment(ctx context.Context, comment model.CommentCreate) error {
+func (store *Store) AddComment(ctx context.Context, comment model.CommentCreate) (*model.Comment, error) {
 	var err error
+	var commentId int64
+	commentCreated := &model.Comment{}
 	if comment.TaskId == 0 {
-		_, err = store.db.Exec(addComment, nil, comment.ActivityId, comment.Title, comment.Content)
+		_, err = store.db.Exec(addComment, nil, comment.ActivityId, comment.Title, comment.Content, sql.Out{Dest: &commentId})
 	}
 
 	if comment.ActivityId == 0 {
-		_, err = store.db.Exec(addComment, comment.TaskId, nil, comment.Title, comment.Content)
+		_, err = store.db.Exec(addComment, comment.TaskId, nil, comment.Title, comment.Content, sql.Out{Dest: &commentId})
 	}
 
 	if err != nil {
-		return common.ErrCannotCreateEntity("comment", err)
+		return nil, common.ErrCannotCreateEntity("comment", err)
+	}
+	commentCreated = &model.Comment{
+		Id:         commentId,
+		TaskId:     &comment.TaskId,
+		ActivityId: &comment.ActivityId,
+		Title:      comment.Title,
+		Content:    &comment.Content,
 	}
 
-	return nil
+	return commentCreated, nil
 }
 
 const listComments = `SELECT * FROM comments`
