@@ -49,3 +49,20 @@ func ListCommentsByActivityId(aptCtx component.AppContext) gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(comments))
 	}
 }
+
+func DeleteComment(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			panic(err)
+		}
+
+		store := query.NewStore(appCtx.GetDBConn())
+
+		if err := store.DeleteComment(ctx.Request.Context(), int64(id)); err != nil {
+			panic(err)
+		}
+
+		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(nil))
+	}
+}

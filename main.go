@@ -60,6 +60,7 @@ func runService(db *sqlx.DB, secretKey string) error {
 	{
 		comments.POST("", api.AddComment(appCtx))
 		comments.GET("/:id", api.ListCommentsByActivityId(appCtx))
+		comments.DELETE("/:id", api.DeleteComment(appCtx))
 	}
 
 	return route.Run()
