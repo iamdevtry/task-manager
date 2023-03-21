@@ -66,3 +66,22 @@ func DeleteActivity(appCtx component.AppContext) gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(nil))
 	}
 }
+
+func GetActivity(aptCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		activityId, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			panic(err)
+		}
+
+		store := query.NewStore(aptCtx.GetDBConn())
+
+		activity, err := store.GetActivity(ctx.Request.Context(), int64(activityId))
+
+		if err != nil {
+			panic(err)
+		}
+
+		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(activity))
+	}
+}
