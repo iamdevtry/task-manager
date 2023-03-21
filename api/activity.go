@@ -85,3 +85,22 @@ func GetActivity(aptCtx component.AppContext) gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(activity))
 	}
 }
+
+func UpdateStatusActivity(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var activity model.ActivityUpdate
+
+		err := ctx.ShouldBindJSON(&activity)
+
+		if err != nil {
+			panic(err)
+		}
+
+		store := query.NewStore(appCtx.GetDBConn())
+
+		if err := store.ChangeStatus(ctx.Request.Context(), activity.Id, int(activity.Status)); err != nil {
+			panic(err)
+		}
+		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(nil))
+	}
+}

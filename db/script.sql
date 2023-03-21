@@ -291,3 +291,12 @@ create or replace NONEDITIONABLE procedure proc_addtasktotag (taskid in number, 
 INSERT INTO task_tags(taskid, tagid)
 VALUES (taskid, tagid);
 end proc_addtasktotag;
+-- PROCEDURE UPDATE STATUS OF ACITIVITY
+CREATE OR REPLACE PROCEDURE proc_updatestatusactivity (
+        idActivity IN NUMBER,
+        newStatus IN NUMBER
+    ) AS BEGIN
+UPDATE activities
+SET status = newStatus
+WHERE id = idActivity;
+END proc_updatestatusactivity;

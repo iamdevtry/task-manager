@@ -54,6 +54,7 @@ func runService(db *sqlx.DB, secretKey string) error {
 		activities.GET("", api.ListActivity(appCtx))
 		activities.GET("/:id", api.GetActivity(appCtx))
 		activities.DELETE("/:id", api.DeleteActivity(appCtx))
+		activities.PUT("", api.UpdateStatusActivity(appCtx))
 	}
 
 	comments := v1.Group("/comments", middleware.RequireAuth(appCtx))
