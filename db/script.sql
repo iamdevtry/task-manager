@@ -259,8 +259,9 @@ create or replace NONEDITIONABLE PROCEDURE proc_addcomment (
         taskId IN NUMBER,
         activityId IN NUMBER,
         title IN NVARCHAR2,
-        content IN CLOB
-    ) AS BEGIN
+        content IN CLOB,
+        inserted_id OUT NUMBER
+    ) IS BEGIN
 INSERT INTO comments (
         taskId,
         activityId,
@@ -272,7 +273,8 @@ VALUES (
         activityId,
         title,
         content
-    );
+    )
+RETURNING id INTO inserted_id;
 END proc_addcomment;
 -- PROCEDURE ADD TAG
 create or replace NONEDITIONABLE PROCEDURE proc_addtag (
