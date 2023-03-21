@@ -37,11 +37,11 @@ func (store *Store) ListComment(ctx context.Context) ([]model.Comment, error) {
 	return comments, nil
 }
 
-const getComment = `SELECT * FROM comments WHERE id = :id`
+const getCommentByActivityId = `SELECT * FROM comments WHERE activityId = :id`
 
-func (store *Store) GetComment(ctx context.Context, id int64) (model.Comment, error) {
-	var comment model.Comment
-	err := store.db.Get(&comment, getComment, id)
+func (store *Store) ListCommentsByActivityId(ctx context.Context, id int64) ([]model.Comment, error) {
+	var comment []model.Comment
+	err := store.db.Select(&comment, getCommentByActivityId, id)
 	if err != nil {
 		return comment, common.ErrCannotGetEntity("comment", err)
 	}
