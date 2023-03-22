@@ -104,3 +104,27 @@ func UpdateStatusActivity(appCtx component.AppContext) gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(nil))
 	}
 }
+
+func UpdateActivity(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		activityId, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			panic(err)
+		}
+
+		var activity model.ActivityUpdate
+		err = ctx.ShouldBindJSON(&activity)
+		if err != nil {
+			panic(err)
+		}
+
+		activity.Id = int64(activityId)
+
+		store := query.NewStore(appCtx.GetDBConn())
+
+		if err := store.UpdateActivity(ctx.Request.Context(), activity); err != nil {
+			panic(err)
+		}
+		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(activity))
+	}
+}

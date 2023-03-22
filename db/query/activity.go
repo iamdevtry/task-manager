@@ -78,3 +78,22 @@ func (store *Store) ChangeStatus(ctx context.Context, idActivity int64, newStatu
 	}
 	return nil
 }
+
+const updateActivity = `BEGIN proc_updateactivity(:activityId, :newtaskid, :newtitle, :newdescription, :newstatus, :newplannedstartdate, :newplannedenddate, :newcontent); END;`
+
+func (store *Store) UpdateActivity(ctx context.Context, activity model.ActivityUpdate) error {
+	_, err := store.db.Exec(updateActivity,
+		activity.Id,
+		activity.TaskId,
+		activity.Title,
+		activity.Description,
+		activity.Status,
+		activity.PlannedStartDate,
+		activity.PlannedEndDate,
+		activity.Content,
+	)
+	if err != nil {
+		return common.ErrCannotUpdatedEntity("activity", err)
+	}
+	return nil
+}
