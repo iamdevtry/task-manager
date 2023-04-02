@@ -165,8 +165,8 @@ ADD FOREIGN KEY (activityId) REFERENCES activities (id);
 -- PROCEDURE ADD TASK
 create or replace NONEDITIONABLE PROCEDURE proc_addtask (
         userid IN NUMBER,
-        title IN NVARCHAR2,
-        description IN NVARCHAR2,
+        title IN CLOB,
+        description IN CLOB,
         hours IN NUMBER,
         plannedstartdate IN TIMESTAMP,
         plannedenddate IN TIMESTAMP,

@@ -6,7 +6,7 @@ type Task struct {
 	Id               int64      `json:"id" db:"ID"`
 	UserId           int64      `json:"user_id" db:"USERID"`
 	Title            string     `json:"title" db:"TITLE"`
-	Description      string     `json:"description" db:"DESCRIPTION"`
+	Description      *string    `json:"description" db:"DESCRIPTION"`
 	Content          *string    `json:"content,omitempty" db:"CONTENT"`
 	Hours            float32    `json:"hours" db:"HOURS"`
 	PlannedStartDate *time.Time `json:"planned_start_date,omitempty" db:"PLANNEDSTARTDATE"`

@@ -1,7 +1,9 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/iamdevtry/task-manager/common"
@@ -46,6 +48,32 @@ func ListTask(appCtx component.AppContext) gin.HandlerFunc {
 		}
 
 		ctx.JSON(http.StatusOK, common.NewSuccessResponse(tasks, nil, nil))
+	}
+}
+
+func DeleteTask(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		taskId, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			panic(err)
+		}
+		requester := ctx.MustGet(common.CurrentUser).(common.Requester)
+		userId := requester.GetUserId()
+
+		store := query.NewStore(appCtx.GetDBConn())
+		task, err := store.GetTask(ctx.Request.Context(), int64(taskId))
+		if err != nil {
+			panic(err)
+		}
+		if task.UserId != userId {
+			panic(common.ErrCannotDeletedEntity("task", fmt.Errorf("You are not the owner of this task")))
+		}
+
+		if err := store.DeleteTask(ctx.Request.Context(), int64(taskId)); err != nil {
+			panic(err)
+		}
+
+		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(nil))
 	}
 }
 
