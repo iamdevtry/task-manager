@@ -28,3 +28,7 @@ type TaskCreate struct {
 	PlannedEndDate   string  `json:"planned_end_date" db:"PLANNEDENDDATE"`
 	Tags             []Tag   `json:"tags"`
 }
+
+type TaskUpdate struct {
+	Title string `json:"title" db:"TITLE"`
+}

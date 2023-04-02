@@ -77,6 +77,37 @@ func DeleteTask(appCtx component.AppContext) gin.HandlerFunc {
 	}
 }
 
+func UpdateTask(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		taskId, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			panic(err)
+		}
+		requester := ctx.MustGet(common.CurrentUser).(common.Requester)
+		userId := requester.GetUserId()
+
+		store := query.NewStore(appCtx.GetDBConn())
+		task, err := store.GetTask(ctx.Request.Context(), int64(taskId))
+		if err != nil {
+			panic(err)
+		}
+
+		if task.UserId != userId {
+			panic(common.ErrCannotUpdatedEntity("task", fmt.Errorf("You are not the owner of this task")))
+		}
+		var oldTask model.TaskUpdate
+		err = ctx.ShouldBindJSON(&oldTask)
+		if err != nil {
+			panic(err)
+		}
+
+		if err := store.UpdateTask(ctx.Request.Context(), int64(taskId), oldTask); err != nil {
+			panic(err)
+		}
+		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(nil))
+	}
+}
+
 // Not required - just a side effect
 // func CountTask(appCtx component.AppContext) gin.HandlerFunc {
 // 	return func(ctx *gin.Context) {

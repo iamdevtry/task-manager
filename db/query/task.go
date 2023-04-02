@@ -100,3 +100,13 @@ func (s *Store) CountTask(ctx context.Context) (int64, error) {
 	}
 	return count, nil
 }
+
+const updateTask = `UPDATE tasks SET title = :title WHERE id = :id`
+
+func (s *Store) UpdateTask(ctx context.Context, id int64, task model.TaskUpdate) error {
+	_, err := s.db.Exec(updateTask, task.Title, id)
+	if err != nil {
+		return common.ErrCannotUpdatedEntity("task", err)
+	}
+	return nil
+}
