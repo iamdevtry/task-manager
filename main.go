@@ -48,6 +48,8 @@ func runService(db *sqlx.DB, secretKey string) error {
 		tasks.GET("", api.ListTask(appCtx))
 		tasks.DELETE("/:id", api.DeleteTask(appCtx))
 		tasks.PUT("/:id", api.UpdateTask(appCtx))
+		tasks.GET("/count-task", api.CountTask(appCtx))
+		tasks.GET("/count-task-done", api.CountTaskDone(appCtx))
 	}
 
 	activities := v1.Group("/activities", middleware.RequireAuth(appCtx))

@@ -110,3 +110,25 @@ func (s *Store) UpdateTask(ctx context.Context, id int64, task model.TaskUpdate)
 	}
 	return nil
 }
+
+const countTaskByUserId = `SELECT count_tasks_by_userid(:p_userId) FROM dual`
+
+func (s *Store) CountTaskByUserId(ctx context.Context, userid int64) (int64, error) {
+	var count int64
+	err := s.db.Get(&count, countTaskByUserId, userid)
+	if err != nil {
+		return 0, common.ErrDB(err)
+	}
+	return count, nil
+}
+
+const countTaskDoneByUserId = `SELECT count_taskdone_by_userid(:userid) FROM dual`
+
+func (s *Store) CountTaskDoneByUserId(ctx context.Context, userid int64) (int64, error) {
+	var count int64
+	err := s.db.Get(&count, countTaskDoneByUserId, userid)
+	if err != nil {
+		return 0, common.ErrDB(err)
+	}
+	return count, nil
+}

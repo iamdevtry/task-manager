@@ -109,19 +109,36 @@ func UpdateTask(appCtx component.AppContext) gin.HandlerFunc {
 }
 
 // Not required - just a side effect
-// func CountTask(appCtx component.AppContext) gin.HandlerFunc {
-// 	return func(ctx *gin.Context) {
-// 		store := query.NewStore(appCtx.GetDBConn())
+func CountTask(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		store := query.NewStore(appCtx.GetDBConn())
 
-// 		requester := ctx.MustGet(common.CurrentUser).(common.Requester)
-// 		userId := requester.GetUserId()
+		requester := ctx.MustGet(common.CurrentUser).(common.Requester)
+		userId := requester.GetUserId()
 
-// 		count, err := store.CountTaskByUserId(ctx.Request.Context(), userId)
+		count, err := store.CountTaskByUserId(ctx.Request.Context(), userId)
 
-// 		if err != nil {
-// 			panic(err)
-// 		}
+		if err != nil {
+			panic(err)
+		}
 
-// 		ctx.JSON(http.StatusOK, common.NewSuccessResponse(count, nil, nil))
-// 	}
-// }
+		ctx.JSON(http.StatusOK, common.NewSuccessResponse(count, nil, nil))
+	}
+}
+
+func CountTaskDone(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		store := query.NewStore(appCtx.GetDBConn())
+
+		requester := ctx.MustGet(common.CurrentUser).(common.Requester)
+		userId := requester.GetUserId()
+
+		count, err := store.CountTaskDoneByUserId(ctx.Request.Context(), userId)
+
+		if err != nil {
+			panic(err)
+		}
+
+		ctx.JSON(http.StatusOK, common.NewSuccessResponse(count, nil, nil))
+	}
+}
