@@ -128,3 +128,38 @@ func UpdateActivity(appCtx component.AppContext) gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(activity))
 	}
 }
+
+// Not required - just a side effect
+func CountActivities(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		store := query.NewStore(appCtx.GetDBConn())
+
+		requester := ctx.MustGet(common.CurrentUser).(common.Requester)
+		userId := requester.GetUserId()
+
+		count, err := store.CountActivityByUserId(ctx.Request.Context(), userId)
+
+		if err != nil {
+			panic(err)
+		}
+
+		ctx.JSON(http.StatusOK, common.NewSuccessResponse(count, nil, nil))
+	}
+}
+
+func CountActivitiesDone(appCtx component.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		store := query.NewStore(appCtx.GetDBConn())
+
+		requester := ctx.MustGet(common.CurrentUser).(common.Requester)
+		userId := requester.GetUserId()
+
+		count, err := store.CountActivityDoneByUserId(ctx.Request.Context(), userId)
+
+		if err != nil {
+			panic(err)
+		}
+
+		ctx.JSON(http.StatusOK, common.NewSuccessResponse(count, nil, nil))
+	}
+}

@@ -97,3 +97,25 @@ func (store *Store) UpdateActivity(ctx context.Context, activity model.ActivityU
 	}
 	return nil
 }
+
+const countActivityByUserId = `SELECT count_activities_by_userid(:p_userId) FROM dual`
+
+func (s *Store) CountActivityByUserId(ctx context.Context, userid int64) (int64, error) {
+	var count int64
+	err := s.db.Get(&count, countActivityByUserId, userid)
+	if err != nil {
+		return 0, common.ErrDB(err)
+	}
+	return count, nil
+}
+
+const countActivityDoneByUserId = `SELECT count_actdone_by_userid(:userid) FROM dual`
+
+func (s *Store) CountActivityDoneByUserId(ctx context.Context, userid int64) (int64, error) {
+	var count int64
+	err := s.db.Get(&count, countActivityDoneByUserId, userid)
+	if err != nil {
+		return 0, common.ErrDB(err)
+	}
+	return count, nil
+}
